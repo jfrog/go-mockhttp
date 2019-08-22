@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+# Based on: https://github.com/golang/go/issues/26827#issuecomment-521319727
 function godoc() {
   if [ ! -f go.mod ]
   then
