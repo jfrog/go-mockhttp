@@ -47,6 +47,7 @@ func (v *verifier) detailsStr(recorder *requestRecorder) string {
 
 type verifyOpt func(verifier *verifier)
 
+// Verify functional option to set how many times a request is expected
 func Times(expected int) verifyOpt {
 	return func(opts *verifier) {
 		opts.verifyTimes = func(acceptedCount, unmatchedCount int) error {
@@ -59,14 +60,17 @@ func Times(expected int) verifyOpt {
 	}
 }
 
+// Verify functional option to set, a request is expected exactly once
 func Once() verifyOpt {
 	return Times(1)
 }
 
+// Verify functional option to set, a request is never expected
 func Never() verifyOpt {
 	return Times(0)
 }
 
+// Verify functional option to set, a request is expected at least number of given times
 func AtLeast(times int) verifyOpt {
 	return func(opts *verifier) {
 		opts.verifyTimes = func(acceptedCount, unmatchedCount int) error {
@@ -79,6 +83,7 @@ func AtLeast(times int) verifyOpt {
 	}
 }
 
+// Verify functional option to set, a request is expected at most number of given times
 func AtMost(times int) verifyOpt {
 	return func(opts *verifier) {
 		opts.verifyTimes = func(acceptedCount, unmatchedCount int) error {
