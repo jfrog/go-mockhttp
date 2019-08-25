@@ -57,7 +57,7 @@ func (r *requestRecorder) String() string {
 	accepted := requests2str(r.acceptedRequests)
 	unmatched := requests2str(r.unmatchedRequests)
 	return fmt.Sprintf(""+
-		"Acceppted:\n%s"+
+		"Accepted:\n%s"+
 		"Unmatched:\n%s", accepted, unmatched)
 }
 
@@ -70,12 +70,14 @@ type recordedRequest struct {
 }
 
 func newRecordedRequest(r *http.Request) recordedRequest {
+	bodyBytes := readAllOrNil(r.Body)
+	r.Body = ioutil.NopCloser(bytes.NewReader(bodyBytes))
 	return recordedRequest{
 		Method: r.Method,
 		Path:   r.URL.Path,
 		Query:  r.URL.Query(),
 		Header: r.Header,
-		Body:   readAllOrNil(r.Body),
+		Body:   bodyBytes,
 	}
 }
 
