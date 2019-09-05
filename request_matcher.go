@@ -76,6 +76,22 @@ func (m *requestMatcher) POST(path string) *requestMatcher {
 	return m.Method("POST").Path(path)
 }
 
+// Match a PUT request with the given path.
+//   PUT("/foo")
+// Which is a shortcut for:
+//   Method("PUT").Path("/foo")
+func (m *requestMatcher) PUT(path string) *requestMatcher {
+	return m.Method("PUT").Path(path)
+}
+
+// Match a DELETE request with the given path.
+//   DELETE("/foo")
+// Which is a shortcut for:
+//   Method("DELETE").Path("/foo")
+func (m *requestMatcher) DELETE(path string) *requestMatcher {
+	return m.Method("DELETE").Path(path)
+}
+
 // Match a request with the given header key-value pair (exact match)
 func (m *requestMatcher) Header(key string, value string) *requestMatcher {
 	m.appendMatcher(fmt.Sprintf("Header(%s: %s)", key, value), func(request *http.Request) bool {

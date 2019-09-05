@@ -69,6 +69,52 @@ func TestRequestMatcher_POST(t *testing.T) {
 	}
 }
 
+func TestRequestMatcher_PUT(t *testing.T) {
+	tests := []struct {
+		request http.Request
+		want    bool
+	}{
+		{
+			request: http.Request{Method: "PUT", URL: &url.URL{Path: "/bar/foo"}},
+			want:    true,
+		},
+		{
+			request: http.Request{Method: "PUT", URL: &url.URL{Path: "/foo"}},
+			want:    false,
+		},
+		{
+			request: http.Request{Method: "POST", URL: &url.URL{Path: "/bar/foo"}},
+			want:    false,
+		},
+	}
+	for _, testCase := range tests {
+		assert.Equalf(t, testCase.want, Request().PUT("/bar/foo").matches(&testCase.request), "request match not as expected. want match: %b, request: %+v", testCase.want, testCase.request)
+	}
+}
+
+func TestRequestMatcher_DELETE(t *testing.T) {
+	tests := []struct {
+		request http.Request
+		want    bool
+	}{
+		{
+			request: http.Request{Method: "DELETE", URL: &url.URL{Path: "/bar/foo"}},
+			want:    true,
+		},
+		{
+			request: http.Request{Method: "DELETE", URL: &url.URL{Path: "/foo"}},
+			want:    false,
+		},
+		{
+			request: http.Request{Method: "PUT", URL: &url.URL{Path: "/bar/foo"}},
+			want:    false,
+		},
+	}
+	for _, testCase := range tests {
+		assert.Equalf(t, testCase.want, Request().DELETE("/bar/foo").matches(&testCase.request), "request match not as expected. want match: %b, request: %+v", testCase.want, testCase.request)
+	}
+}
+
 func TestRequestMatcher_Method(t *testing.T) {
 	tests := []struct {
 		request http.Request
