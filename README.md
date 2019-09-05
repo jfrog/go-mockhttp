@@ -16,12 +16,11 @@ A common use case is to start a mock HTTP server in your test, define endpoints,
 send requests to an HTTP server, and verify the expectations.
 
 ```go
-// Start a mock http server with a single endpoint which matches a GET request with path "/foo" 
-// and returns a response (default: OK) 
+// Start a mock http server with a single endpoint which matches a request and returns a response
 server := mockhttp.StartServer(mockhttp.WithEndpoints(
 	mockhttp.NewServerEndpoint().
-		When(mockhttp.Request().GET("/foo")).
-		Respond(mockhttp.Response())))
+		When(mockhttp.Request().GET("/foo")). // When received request matches: GET /foo (with any headers)
+		Respond(mockhttp.Response())))        // Respond with default response (status 200 OK, empty body, no headers)
 // Make sure to close it
 defer server.Close()
 
