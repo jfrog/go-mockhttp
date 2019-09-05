@@ -45,7 +45,7 @@ func (r *response) BodyString(body string) *response {
 	return r
 }
 
-// Set the body (as string) to respond with
+// Set header key-values pair to respond with
 func (r *response) Header(key, value string, other ...string) *response {
 	r.header.Set(key, value)
 	for _, v := range other {
