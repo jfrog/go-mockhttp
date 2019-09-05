@@ -45,6 +45,15 @@ func (r *response) BodyString(body string) *response {
 	return r
 }
 
+// Set the body (as string) to respond with
+func (r *response) Header(key, value string, other ...string) *response {
+	r.header.Set(key, value)
+	for _, v := range other {
+		r.header.Add(key, v)
+	}
+	return r
+}
+
 // Set a delay, after receiving a request, before sending the response
 func (r *response) Delay(delay time.Duration) *response {
 	r.delay = delay
