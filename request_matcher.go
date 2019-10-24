@@ -116,6 +116,30 @@ func (m *requestMatcher) NoHeader(key string) *requestMatcher {
 	return m
 }
 
+// Match a request with the given query key-value pair (exact match)
+func (m *requestMatcher) Query(key string, value string) *requestMatcher {
+	m.appendMatcher(fmt.Sprintf("Query(%s: %s)", key, value), func(request *http.Request) bool {
+		return request.URL != nil && request.URL.Query().Get(key) == value
+	})
+	return m
+}
+
+// Match a request with the given query key-value pair, the value is evaluated using the given regular expression
+func (m *requestMatcher) QueryMatches(key string, value *regexp.Regexp) *requestMatcher {
+	m.appendMatcher(fmt.Sprintf("QueryMatches(%s: %s)", key, value), func(request *http.Request) bool {
+		return request.URL != nil && value.MatchString(request.URL.Query().Get(key))
+	})
+	return m
+}
+
+// Match a request only if it does not have a query with the given key
+func (m *requestMatcher) NoQuery(key string) *requestMatcher {
+	m.appendMatcher(fmt.Sprintf("NoQuery(%s)", key), func(request *http.Request) bool {
+		return request.URL == nil || request.URL.Query().Get(key) == ""
+	})
+	return m
+}
+
 func (m *requestMatcher) appendMatcher(desc string, matcher requestMatcherFunc) {
 	if len(m.description) > 0 {
 		m.description = m.description + ","

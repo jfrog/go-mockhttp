@@ -262,3 +262,86 @@ func TestRequestMatcher_NoHeader(t *testing.T) {
 		assert.Equalf(t, testCase.want, Request().NoHeader("X-Foo").matches(&testCase.request), "request match not as expected. want match: %b, request: %+v", testCase.want, testCase.request)
 	}
 }
+
+func TestRequestMatcher_Query(t *testing.T) {
+	tests := []struct {
+		request http.Request
+		want    bool
+	}{
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "foo=hello"}},
+			want:    true,
+		},
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "foo=hello-world"}},
+			want:    false,
+		},
+		{
+			request: http.Request{},
+			want:    false,
+		},
+	}
+	for _, testCase := range tests {
+		assert.Equalf(t, testCase.want, Request().Query("foo", "hello").matches(&testCase.request), "request match not as expected. want match: %b, request: %+v", testCase.want, testCase.request)
+	}
+}
+
+func TestRequestMatcher_QueryMatches(t *testing.T) {
+	tests := []struct {
+		request http.Request
+		regex   *regexp.Regexp
+		want    bool
+	}{
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "foo=hello"}},
+			regex:   regexp.MustCompile("hello"),
+			want:    true,
+		},
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "foo=hello"}},
+			regex:   regexp.MustCompile("h.+o"),
+			want:    true,
+		},
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "foo=hello-world"}},
+			regex:   regexp.MustCompile(".*-world"),
+			want:    true,
+		},
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "bar=hello"}},
+			regex:   regexp.MustCompile("hello"),
+			want:    false,
+		},
+		{
+			request: http.Request{},
+			regex:   regexp.MustCompile("hello"),
+			want:    false,
+		},
+	}
+	for _, testCase := range tests {
+		assert.Equalf(t, testCase.want, Request().QueryMatches("foo", testCase.regex).matches(&testCase.request), "request match not as expected. want match: %b, request: %+v", testCase.want, testCase.request)
+	}
+}
+
+func TestRequestMatcher_NoQuery(t *testing.T) {
+	tests := []struct {
+		request http.Request
+		want    bool
+	}{
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "bar=hello"}},
+			want:    true,
+		},
+		{
+			request: http.Request{},
+			want:    true,
+		},
+		{
+			request: http.Request{URL: &url.URL{RawQuery: "foo=world"}},
+			want:    false,
+		},
+	}
+	for _, testCase := range tests {
+		assert.Equalf(t, testCase.want, Request().NoQuery("foo").matches(&testCase.request), "request match not as expected. want match: %b, request: %+v", testCase.want, testCase.request)
+	}
+}
