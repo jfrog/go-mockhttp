@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 )
 
 func newRequestRecorder() *requestRecorder {
@@ -18,27 +19,38 @@ func newRequestRecorder() *requestRecorder {
 }
 
 type requestRecorder struct {
+	mtx               sync.RWMutex
 	acceptedRequests  []recordedRequest
 	unmatchedRequests []recordedRequest
 }
 
 func (r *requestRecorder) AcceptedRequests() []recordedRequest {
-	return r.acceptedRequests
+	r.mtx.RLock()
+	defer r.mtx.RUnlock()
+	return copyOf(r.acceptedRequests)
 }
 
 func (r *requestRecorder) recordAcceptedRequest(req *http.Request) {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
 	r.acceptedRequests = append(r.acceptedRequests, newRecordedRequest(req))
 }
 
 func (r *requestRecorder) UnmatchedRequests() []recordedRequest {
-	return r.unmatchedRequests
+	r.mtx.RLock()
+	defer r.mtx.RUnlock()
+	return copyOf(r.unmatchedRequests)
 }
 
 func (r *requestRecorder) recordUnmatchedRequest(req *http.Request) {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
 	r.unmatchedRequests = append(r.unmatchedRequests, newRecordedRequest(req))
 }
 
 func (r *requestRecorder) ClearHistory() {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
 	r.acceptedRequests = []recordedRequest{}
 	r.unmatchedRequests = []recordedRequest{}
 }
@@ -54,6 +66,10 @@ func (r *requestRecorder) String() string {
 		}
 		return str
 	}
+
+	r.mtx.RLock()
+	defer r.mtx.RUnlock()
+
 	accepted := requests2str(r.acceptedRequests)
 	unmatched := requests2str(r.unmatchedRequests)
 	return fmt.Sprintf(""+
@@ -123,4 +139,14 @@ func (r recordedRequest) String() string {
 	b.WriteString(r.BodyAsString())
 	b.WriteRune('\n')
 	return b.String()
+}
+
+func copyOf(orig []recordedRequest) []recordedRequest {
+	if orig == nil {
+		return nil
+	}
+
+	res := make([]recordedRequest, len(orig))
+	copy(res, orig)
+	return res
 }
