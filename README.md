@@ -2,9 +2,14 @@
 
 Package for mocking HTTP servers and clients. 
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/jfrog/go-mockhttp)
+[![CI](https://github.com/jfrog/go-mockhttp/actions/workflows/ci.yml/badge.svg)](https://github.com/jfrog/go-mockhttp/actions/workflows/ci.yml)
+![GitHub](https://img.shields.io/github/license/jfrog/go-mockhttp)
+[![Go Reference](https://pkg.go.dev/badge/github.com/jfrog/go-mockhttp.svg)](https://pkg.go.dev/github.com/jfrog/go-mockhttp)
+
 ## Main Features
   
-It provides the following main features:
+Provides the following main features:
 1. Mock using real HTTP server with simply defined endpoints and expected behavior
 1. Verify expectations
 1. Simulate server faults, such as response delays
