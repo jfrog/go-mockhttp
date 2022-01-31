@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-// Functional option for configuring a mock http server
+// ServerOpt is a functional option for configuring a mock http server
 type ServerOpt func(*Server)
 
-// Set the name of the mock http server.
+// WithName sets the name of the mock http server.
 //
 // Used mainly for logging, has no real functional purpose. Set to "anonymous" if not explicitly set.
 func WithName(name string) ServerOpt {
@@ -22,7 +22,7 @@ func WithName(name string) ServerOpt {
 	}
 }
 
-// Set TLS configuration, to start the mock http server with TLS enabled.
+// WithTls sets TLS configuration, to start the mock http server with TLS enabled.
 //
 // A server is started without TLS by default if not explicitly set.
 func WithTls(config *tls.Config) ServerOpt {
@@ -31,7 +31,7 @@ func WithTls(config *tls.Config) ServerOpt {
 	}
 }
 
-// Set the endpoints the server shall handle
+// WithEndpoints sets the endpoints the server shall handle
 func WithEndpoints(endpoints ...ServerEndpoint) ServerOpt {
 	return func(s *Server) {
 		s.endpoints = endpoints
@@ -45,7 +45,7 @@ func defaultServer() *Server {
 	}
 }
 
-// Start a new mock http server
+// StartServer starts a new mock http server
 //
 // The server is configured using the provided functional options.
 // The defaults are:
@@ -79,7 +79,7 @@ func StartServer(opts ...ServerOpt) *Server {
 	return mockSvr
 }
 
-// Mock http server
+// Server is a mock http server
 type Server struct {
 	Port            int
 	name            string
@@ -95,7 +95,7 @@ func (mockSvr *Server) Close() {
 	mockSvr.server.Close()
 }
 
-// The base URL of this server
+// BaseUrl - the base URL of this server
 //
 // The URL is constructed based on whether TLS is enabled ("http" or "https") and on the port the server started with.
 // An example base URL would be:
@@ -108,7 +108,7 @@ func (mockSvr *Server) BaseUrl() string {
 	return fmt.Sprintf("%s://localhost:%d", scheme, mockSvr.Port)
 }
 
-// Build a URL based on the server's base URL and the given path
+// BuildUrl builds a URL based on the server's base URL and the given path
 //
 // For example:
 //   url := server.BuildUrl("/path/to/something")
@@ -117,7 +117,7 @@ func (mockSvr *Server) BuildUrl(path string) string {
 	return fmt.Sprintf("%s%s", mockSvr.BaseUrl(), path)
 }
 
-// Add an endpoint to this server
+// AddEndpoint adds an endpoint to this server
 func (mockSvr *Server) AddEndpoint(endpoint ServerEndpoint) {
 	mockSvr.endpoints = append(mockSvr.endpoints, endpoint)
 }
@@ -130,17 +130,17 @@ func (mockSvr *Server) Clear() {
 	mockSvr.ClearHistory()
 }
 
-// Get all requests which got to this server and were handled by one of the defined endpoints
+// AcceptedRequests gets all requests which got to this server and were handled by one of the defined endpoints
 func (mockSvr *Server) AcceptedRequests() []recordedRequest {
 	return mockSvr.requestRecorder.AcceptedRequests()
 }
 
-// Get all requests which got to this server but did not match any of the defined endpoints
+// UnmatchedRequests gets all requests which got to this server but did not match any of the defined endpoints
 func (mockSvr *Server) UnmatchedRequests() []recordedRequest {
 	return mockSvr.requestRecorder.UnmatchedRequests()
 }
 
-// Clean all the request history recorded by this server
+// ClearHistory cleans all the request history recorded by this server
 func (mockSvr *Server) ClearHistory() {
 	mockSvr.requestRecorder.ClearHistory()
 }
@@ -159,7 +159,7 @@ func (mockSvr *Server) Verify(matcher *requestMatcher, opts ...verifyOpt) error 
 	return newVerifier(matcher, opts...).verifyRequests(mockSvr.requestRecorder)
 }
 
-// Wait for a request (matching the given matcher) to be received by the server, no matter if an matching endpoint is
+// WaitFor waits for a request (matching the given matcher) to be received by the server, no matter if an matching endpoint is
 // defined. The provided context can be used e.g. for setting a timeout. Returns an error e.g. when waiting has timed out.
 //
 // For example:

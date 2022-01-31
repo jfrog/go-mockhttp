@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Create a new mock http client with a list of client endpoints it should handle
+// NewClient creates a new mock http client with a list of client endpoints it should handle
 //
 // A common use case for this mock http client is to mock transport errors. For example:
 //   // create a new mock http client which returns a given error
@@ -27,29 +27,29 @@ func NewClient(endpoints ...ClientEndpoint) *Client {
 	return &client
 }
 
-// Mock http client
+// Client is a mock http client
 type Client struct {
 	httpClient      *http.Client
 	endpoints       []ClientEndpoint
 	requestRecorder *requestRecorder
 }
 
-// Get the actual http client, to be used by tests
+// HttpClient returns the actual http client, to be used by tests
 func (c *Client) HttpClient() *http.Client {
 	return c.httpClient
 }
 
-// Get all requests which this client received and were handled by one of the defined endpoints
+// AcceptedRequests returns all requests which this client received and were handled by one of the defined endpoints
 func (c *Client) AcceptedRequests() []recordedRequest {
 	return c.requestRecorder.AcceptedRequests()
 }
 
-// Get all requests which this client received but did not match any of the defined endpoints
+// UnmatchedRequests returns all requests which this client received but did not match any of the defined endpoints
 func (c *Client) UnmatchedRequests() []recordedRequest {
 	return c.requestRecorder.UnmatchedRequests()
 }
 
-// Clean all the request history recorded by this client
+// ClearHistory cleans all the request history recorded by this client
 func (c *Client) ClearHistory() {
 	c.requestRecorder.ClearHistory()
 }

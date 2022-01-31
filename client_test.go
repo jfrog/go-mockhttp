@@ -71,7 +71,7 @@ func subtest_AnyRequest_CustomHandler(t *testing.T) {
 	}))
 	res, err := client.HttpClient().Get("http://myhost/foo")
 	assert.Nil(t, res, "response was not expected")
-	assert.EqualError(t, err, "Get http://myhost/foo: custom error", "expected an error with a specific message")
+	assert.EqualError(t, err, "Get \"http://myhost/foo\": custom error", "expected an error with a specific message")
 }
 
 func subtest_MatchRequests(t *testing.T) {
@@ -130,7 +130,7 @@ func subtest_TransportError(t *testing.T) {
 	client := mockhttp.NewClient(mockhttp.NewClientEndpoint().ReturnError(fmt.Errorf("dummy error")))
 	res, err := client.HttpClient().Get("http://myhost/foo/bar")
 	assert.Nil(t, res, "response was not expected")
-	assert.EqualError(t, err, "Get http://myhost/foo/bar: dummy error", "expected an error with a specific message")
+	assert.EqualError(t, err, "Get \"http://myhost/foo/bar\": dummy error", "expected an error with a specific message")
 }
 
 func assertNotImplementedResponse(t *testing.T, res *http.Response) {

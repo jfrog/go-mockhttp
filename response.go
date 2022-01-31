@@ -12,7 +12,8 @@ type response struct {
 	delay      time.Duration
 }
 
-// Create a new response definition. To be used e.g. with the ServerEndpoint's Respond builder function.
+// Response creates a new response definition.
+// To be used e.g. with the ServerEndpoint's Respond builder function.
 //
 // Defaults:
 //   - Status code: OK 200
@@ -27,25 +28,25 @@ func Response() *response {
 	}
 }
 
-// Set the status code to respond with
+// StatusCode sets the status code to respond with
 func (r *response) StatusCode(statusCode int) *response {
 	r.statusCode = statusCode
 	return r
 }
 
-// Set the body bytes to respond with
+// Body sets the body bytes to respond with
 func (r *response) Body(body []byte) *response {
 	r.body = body
 	return r
 }
 
-// Set the body (as string) to respond with
+// BodyString sets the body (as string) to respond with
 func (r *response) BodyString(body string) *response {
 	r.body = []byte(body)
 	return r
 }
 
-// Set header key-values pair to respond with
+// Header sets header key-values pair to respond with
 func (r *response) Header(key, value string, other ...string) *response {
 	r.header.Set(key, value)
 	for _, v := range other {
@@ -54,7 +55,7 @@ func (r *response) Header(key, value string, other ...string) *response {
 	return r
 }
 
-// Set a delay, after receiving a request, before sending the response
+// Delay sets a delay, after receiving a request, before sending the response
 func (r *response) Delay(delay time.Duration) *response {
 	r.delay = delay
 	return r
